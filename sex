@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>名古屋弁のセックス、デラックス。</title>
+  <style>
+    :root{
+      --bg1:#081229;
+      --bg2:#1b2b4a;
+      --accent:#ff7a7a;
+      --text:#fff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      font-family: "Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,Arial,sans-serif;
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .wrap{
+      text-align:center;
+      padding:36px;
+    }
+
+    .line{
+      font-size: clamp(28px, 6vw, 64px);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      margin-bottom:34px;
+      display:inline-block;
+      line-height:1;
+      text-shadow: 0 8px 30px rgba(0,0,0,0.45);
+    }
+
+    .char{
+      display:inline-block;
+      opacity:0;
+      transform: translateY(18px) scale(0.98);
+    }
+
+    @keyframes appear {
+      from{ opacity:0; transform: translateY(18px) scale(0.98); filter: blur(6px) }
+      to  { opacity:1; transform: translateY(0) scale(1); filter: blur(0) }
+    }
+
+    .button-wrap{
+      opacity:0;
+      transform: translateY(10px);
+      transition: opacity .5s ease, transform .3s ease;
+      margin-top:12px;
+    }
+
+    .button-wrap.visible{
+      opacity:1;
+      transform: translateY(0);
+    }
+
+    button.ok{
+      background: linear-gradient(180deg,var(--accent),#ff5050);
+      color:#fff;
+      border: none;
+      padding: 12px 36px;
+      font-size: clamp(14px, 2.5vw, 20px);
+      border-radius:10px;
+      cursor:pointer;
+      box-shadow: 0 6px 24px rgba(255,90,90,0.18), inset 0 -2px 0 rgba(0,0,0,0.06);
+      transition: transform .14s ease, box-shadow .14s ease, opacity .14s ease;
+    }
+    button.ok:hover{ transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 30px rgba(0,0,0,0.25) }
+    button.ok:active{ transform: translateY(0) scale(.995) }
+
+    .fallback{
+      margin-top:10px;
+      font-size:13px;
+      color:rgba(255,255,255,0.72);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" aria-live="polite">
+    <div id="text" class="line" aria-hidden="false"></div>
+    <div id="btnWrap" class="button-wrap" aria-hidden="true">
+      <button class="ok" id="okBtn">了解</button>
+      <div class="fallback" id="fallbackMsg" style="display:none">
+        ブラウザの制限でタブを閉じられない場合は、このタブを閉じてください。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const phrase = "名古屋弁のセックス、デラックス。";
+    const container = document.getElementById('text');
+    const btnWrap = document.getElementById('btnWrap');
+    const okBtn = document.getElementById('okBtn');
+    const fallback = document.getElementById('fallbackMsg');
+
+    const charDelay = 0.36;
+    const animationDuration = 0.9;
+    const extraDelayAfter = 0.9;
+
+    const chars = Array.from(phrase);
+    chars.forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.className = 'char';
+      span.textContent = ch;
+      span.style.animation = `appear ${animationDuration}s cubic-bezier(.2,.9,.2,1) forwards`;
+      span.style.animationDelay = (i * charDelay) + 's';
+      container.appendChild(span);
+    });
+
+    const totalTime = chars.length * charDelay + animationDuration + extraDelayAfter;
+    setTimeout(() => {
+      btnWrap.classList.add('visible');
+      btnWrap.setAttribute('aria-hidden','false');
+    }, totalTime * 1000);
+
+    okBtn.addEventListener('click', () => {
+      try {
+        window.close();
+        setTimeout(() => {
+          if (!window.closed) {
+            document.querySelector('.wrap').style.transition = 'opacity .6s ease';
+            document.querySelector('.wrap').style.opacity = '0';
+            fallback.style.display = 'block';
+            setTimeout(() => {
+              document.body.innerHTML = '<div style="height:100vh;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.95)">おつかれさまです。</div>';
+            }, 700);
+          }
+        }, 700);
+      } catch (e) {
+        fallback.style.display = 'block';
+      }
+    });
+
+    okBtn.addEventListener('keyup', (e) => {
+      if(e.key === 'Enter') okBtn.click();
+    });
+  </script>
+</body>
+</html>
